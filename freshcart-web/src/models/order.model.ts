@@ -1,0 +1,107 @@
+import mongoose from "mongoose";
+
+export interface IOrder {
+  _id: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+  items: [
+    {
+      grocery: mongoose.Types.ObjectId;
+      name: string;
+      price: number;
+      unit: string;
+      image: string;
+      quantity: number;
+    },
+  ];
+  isPaid: boolean;
+  totalAmount: number;
+  paymentMethod: "COD" | "Online";
+  address: {
+    fullName: string;
+    mobile: string;
+    city: string;
+    state: string;
+    pincode: string;
+    fullAddress: string;
+    latitude: number;
+    longitude: number;
+  };
+  assignment?: mongoose.Types.ObjectId;
+  assignedDeliveyBoy?: mongoose.Types.ObjectId;
+  status: "Pending" | "Out for Delivery" | "Delivered" | "Failed";
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const orderSchema = new mongoose.Schema<IOrder>(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    items: [
+      {
+        grocery: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Grocery",
+          required: true,
+        },
+        name: String,
+        price: Number,
+        unit: String,
+        image: String,
+        quantity: Number,
+      },
+    ],
+    paymentMethod: {
+      type: String,
+      enum: ["COD", "Online"],
+      default: "COD",
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    totalAmount: Number,
+    address: {
+      fullName: String,
+      mobile: String,
+      city: String,
+      state: String,
+      pinCode: String,
+      fullAddress: String,
+      latitude: Number,
+      longitude: Number,
+    },
+    assignment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DeliveryAssignment",
+      default: null,
+    },
+    assignedDeliveyBoy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Out for Delivery", "Delivered", "Failed"],
+      default: "Pending",
+    },
+    razorpayOrderId: {
+      type: String,
+      sparse: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+      sparse: true,
+    },
+  },
+  { timestamps: true },
+);
+
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+
+export default Order;
