@@ -19,6 +19,8 @@ interface IUser {
       default: number[];
     };
   };
+  socketId: string | null;
+  isOnline: boolean;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -44,6 +46,8 @@ const userSchema = new mongoose.Schema<IUser>(
         default: [0, 0],
       },
     },
+    socketId: { type: String, default: null },
+    isOnline: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

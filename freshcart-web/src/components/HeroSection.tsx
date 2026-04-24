@@ -1,14 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Truck, Apple, ShoppingBag, Sparkles, ShieldCheck, Award, Clock } from "lucide-react";
+import {
+  Leaf,
+  Truck,
+  Apple,
+  ShoppingBag,
+  Sparkles,
+  ShieldCheck,
+  Award,
+  Clock,
+} from "lucide-react";
+import { getSocket } from "@/lib/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const slides = [
   {
     id: 1,
-    image: "https://images.pexels.com/photos/7890010/pexels-photo-7890010.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop",
+    image:
+      "https://images.pexels.com/photos/7890010/pexels-photo-7890010.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop",
     badge: "Farm Fresh Vegetables",
     badgeIcon: <Leaf className="h-4 w-4 text-green-500" />,
     title: "Fresh Vegetables",
@@ -75,7 +88,15 @@ const slides = [
 ];
 
 export default function Hero() {
+  const { userData } = useSelector((state: RootState) => state.user);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (userData) {
+      const socket = getSocket();
+      socket.emit("identity", userData?._id);
+    }
+  }, [userData]); 
 
   useEffect(() => {
     const timer = setInterval(() => {
